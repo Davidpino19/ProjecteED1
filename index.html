@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Entorns — Mini demo</title>
+    <style>
+      :root{--bg:#0f1724;--card:#0b1220;--text:#e6eef8;--muted:#9fb0d0;--accent:#7aa2ff}
+      [data-theme="light"]{--bg:#f5f8ff;--card:#ffffff;--text:#0b1220;--muted:#44576f;--accent:#2f6bff}
+      *{box-sizing:border-box}
+      html,body{height:100%;margin:0;font-family:Inter, system-ui, Arial;}
+      body{background:linear-gradient(180deg,var(--bg),#071029 80%);color:var(--text);display:flex;flex-direction:column}
+      header{padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(6px)}
+      .brand{font-weight:700;letter-spacing:-0.02em}
+      main{flex:1;display:grid;place-items:center;padding:2rem}
+      .card{background:var(--card);max-width:880px;width:100%;border-radius:18px;padding:2.2rem;box-shadow:0 12px 40px rgba(2,6,23,.6);border:1px solid rgba(255,255,255,.03);text-align:center}
+      h1{font-size:2.4rem;margin:0 0 .5rem}
+      p.lead{color:var(--muted);margin:0 0 1.25rem}
+      .actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+      .btn{padding:.7rem 1.1rem;border-radius:999px;border:none;cursor:pointer;font-weight:700}
+      .btn-primary{background:linear-gradient(90deg,var(--accent),#b794ff);color:white}
+      .btn-ghost{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.06)}
+      .shapes{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:inherit}
+      .shape{position:absolute;width:120px;height:120px;border-radius:24px;opacity:.08;filter:blur(18px);transform:translate3d(0,0,0)}
+      .s1{background:radial-gradient(circle,#7aa2ff,#b794ff);left:-8%;top:8%}
+      .s2{background:radial-gradient(circle,#ff9a8b,#fecf63);right:-6%;bottom:6%}
+      footer{padding:1rem;text-align:center;color:var(--muted);font-size:.9rem}
+      /* confetti */
+      .confetti{position:fixed;left:0;top:0;pointer-events:none;z-index:999}
+      .dot{width:10px;height:14px;border-radius:3px;position:absolute;opacity:0;transform:translateY(0) rotate(0)}
+      @keyframes pop {0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(140vh) rotate(480deg)}}
+      @media (max-width:520px){h1{font-size:1.6rem}.card{padding:1.2rem}}
+    </style>
+  </head>
+  <body data-theme="dark">
+    <header>
+      <div class="brand">Entorns · Demo</div>
+      <div>
+        <button id="themeToggle" title="Alternar tema" class="btn btn-ghost">Toggle tema</button>
+      </div>
+    </header>
+    <main>
+      <div class="card">
+        <div class="shapes">
+          <div class="shape s1"></div>
+          <div class="shape s2"></div>
+        </div>
+        <h1>Algo guay, pero sencillo</h1>
+        <p class="lead">He hecho una versión pequeña y vistosa de la página: tema claro/oscuro y un efecto divertido.</p>
+        <div class="actions">
+          <button id="wowBtn" class="btn btn-primary">Haz algo guay</button>
+          <a href="#" id="more" class="btn btn-ghost">Ver más</a>
+        </div>
+      </div>
+    </main>
+    <footer>Hecho rápido — dime si quieres más cambios.</footer>
+
+    <div id="confetti" class="confetti"></div>
+
+    <script>
+      (function(){
+        const root = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const wow = document.getElementById('wowBtn');
+        const confetti = document.getElementById('confetti');
+
+        // Restaurar tema
+        const saved = localStorage.getItem('entorns-theme');
+        if(saved) root.setAttribute('data-theme', saved);
+
+        themeToggle.addEventListener('click', ()=>{
+          const cur = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+          root.setAttribute('data-theme', cur);
+          localStorage.setItem('entorns-theme', cur);
+        });
+
+        // Confetti sencillo
+        function makeConfetti(x,y){
+          for(let i=0;i<28;i++){
+            const el = document.createElement('div');
+            el.className='dot';
+            el.style.left = x + (Math.random()*80-40) + 'px';
+            el.style.top = y + 'px';
+            el.style.background = `hsl(${Math.random()*360} 80% 60%)`;
+            el.style.transform = `translateY(0) rotate(${Math.random()*360}deg)`;
+            const dur = 1200 + Math.random()*900;
+            el.style.animation = `pop ${dur}ms cubic-bezier(.2,.6,.3,1)`;
+            confetti.appendChild(el);
+            setTimeout(()=> el.remove(), dur+50);
+          }
+        }
+
+        wow.addEventListener('click', (e)=>{
+          const rect = confetti.getBoundingClientRect();
+          makeConfetti(e.clientX, e.clientY);
+        });
+
+        // Small enter animation
+        document.querySelector('.card').style.transform='translateY(6px)';
+        setTimeout(()=>{document.querySelector('.card').style.transition='transform .7s cubic-bezier(.2,.8,.2,1)';document.querySelector('.card').style.transform='none'},50);
+      })();
+    </script>
+  </body>
+</html>
